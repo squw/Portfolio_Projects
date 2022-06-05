@@ -148,3 +148,42 @@ WHERE dea.continent IS NOT NULL
 )
 SELECT *, (rolling_total_vaccinations/population) * 100 AS vaccination_rates
 FROM Pop_vs_Vac
+
+
+
+-- Temp Table
+
+DROP TABLE IF EXISTS #Vaccination_Rates
+CREATE TABLE #Vaccination_Rates (continent NVARCHAR(255),
+								 location NVARCHAR(255),
+								 date DATETIME,
+								 population NUMERIC,
+								 new_vaccinations NUMERIC,
+								 rolling_total_vaccinations NUMERIC)
+
+
+INSERT INTO #Vaccination_Rates
+SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, SUM(CONVERT(BIGINT, vac.new_vaccinations)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS total_vaccinations
+FROM [Covid Project]..Covid_Deaths AS dea
+JOIN [Covid Project]..Covid_Vaccinations AS vac
+	ON dea.location = vac.location AND dea.date = vac.date
+WHERE dea.continent IS NOT NULL
+
+SELECT *, (rolling_total_vaccinations/population)*100 AS vaccination_rates
+FROM #Vaccination_Rates
+
+
+
+-- View
+
+CREATE VIEW Vaccination_Rates_View AS
+(
+SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, SUM(CONVERT(BIGINT, vac.new_vaccinations)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS total_vaccinations
+FROM [Covid Project]..Covid_Deaths AS dea
+JOIN [Covid Project]..Covid_Vaccinations AS vac
+	ON dea.location = vac.location AND dea.date = vac.date
+WHERE dea.continent IS NOT NULL
+)
+
+SELECT *
+FROM Vaccination_Rates_View

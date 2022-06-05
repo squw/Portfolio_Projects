@@ -155,11 +155,11 @@ FROM Pop_vs_Vac
 
 DROP TABLE IF EXISTS #Vaccination_Rates
 CREATE TABLE #Vaccination_Rates (continent NVARCHAR(255),
-								 location NVARCHAR(255),
-								 date DATETIME,
-								 population NUMERIC,
-								 new_vaccinations NUMERIC,
-								 rolling_total_vaccinations NUMERIC)
+				 location NVARCHAR(255),
+				 date DATETIME,
+				 population NUMERIC,
+				 new_vaccinations NUMERIC,
+				 rolling_total_vaccinations NUMERIC)
 
 
 INSERT INTO #Vaccination_Rates
